@@ -195,8 +195,19 @@ public:
         {
             _IsDefaultDevice = TRUE;
 
-            Result = _pEnumerator->GetDefaultAudioEndpoint(eRender, eCommunications, &_pDevice);
+            IMMDevice *pDefaultDevice;
+            Result = _pEnumerator->GetDefaultAudioEndpoint(eRender, eCommunications, &pDefaultDevice);
             TASSERT(SUCCEEDED(Result));
+
+            WCHAR *pDefaultDeviceId;
+            Result = pDefaultDevice->GetId(&pDefaultDeviceId);
+            TASSERT(SUCCEEDED(Result));
+
+            Result = _pEnumerator->GetDevice(pDefaultDeviceId, &_pDevice);
+            TASSERT(SUCCEEDED(Result));
+
+            CoTaskMemFree(pDefaultDeviceId);
+            SafeRelease(&pDefaultDevice);
         }
         else
         {
